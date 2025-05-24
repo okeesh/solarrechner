@@ -185,7 +185,7 @@ const SolarCalculator: React.FC = () => {
 
     if (currentStep === -1) {
         return (
-            <div className="w-full min-h-[60vh] bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
+            <div className="w-full min-h-[60vh] flex items-center justify-center">
                 <div className="max-w-md w-full text-center rounded-2xl p-8">
                     <h2 className="text-2xl font-bold text-gray-800 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                         Solarrechner
