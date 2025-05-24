@@ -218,7 +218,7 @@ const SolarCalculator: React.FC = () => {
                     {/* 👇 Neuer Button statt Formular */}
                     <button
                         onClick={() => {
-                            const modal = document.getElementById("contact-form");
+                            const modal = window.parent.document.getElementById("contact-form");
                             if (modal) {
                                 modal.style.display = "flex";
                                 modal.style.opacity = "1";
