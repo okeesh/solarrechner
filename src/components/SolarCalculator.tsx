@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 
 interface FormData {
     installation: string;
@@ -98,7 +97,6 @@ const SolarCalculator: React.FC = () => {
 
     const calculateSavings = (): SavingsResult => {
         let baseProduction = 0;
-        let monthlyCost = 0;
 
         // Dachfläche -> kWp Potential
         switch (formData.roofArea) {
@@ -106,14 +104,6 @@ const SolarCalculator: React.FC = () => {
             case 'mittel': baseProduction = 10; break;
             case 'gross': baseProduction = 15; break;
             case 'sehr-gross': baseProduction = 25; break;
-        }
-
-        // Monatliche Kosten
-        switch (formData.currentBill) {
-            case 'niedrig': monthlyCost = 75; break;
-            case 'mittel': monthlyCost = 150; break;
-            case 'hoch': monthlyCost = 275; break;
-            case 'sehr-hoch': monthlyCost = 400; break;
         }
 
         // Bewohner Faktor
@@ -124,12 +114,21 @@ const SolarCalculator: React.FC = () => {
             case '5+': residentsFactor = 1.2; break;
         }
 
+        // Stromrechnung Faktor für realistische Berechnung
+        let billFactor = 1;
+        switch (formData.currentBill) {
+            case 'niedrig': billFactor = 0.8; break;
+            case 'mittel': billFactor = 1.0; break;
+            case 'hoch': billFactor = 1.3; break;
+            case 'sehr-hoch': billFactor = 1.6; break;
+        }
+
         const annualProduction = baseProduction * 1000 * residentsFactor; // kWh pro Jahr
         const selfConsumption = 0.3; // 30% Eigenverbrauch
         const feedInTariff = 0.08; // 8 Cent/kWh Einspeisevergütung
         const electricityPrice = 0.32; // 32 Cent/kWh
 
-        const savingsFromSelfConsumption = annualProduction * selfConsumption * electricityPrice;
+        const savingsFromSelfConsumption = annualProduction * selfConsumption * electricityPrice * billFactor;
         const incomeFromFeedIn = annualProduction * (1 - selfConsumption) * feedInTariff;
         const totalAnnualSavings = savingsFromSelfConsumption + incomeFromFeedIn;
 
@@ -210,7 +209,9 @@ const SolarCalculator: React.FC = () => {
         return (
             <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="bg-gradient-to-r from-teal-400 to-teal-500 p-6 text-white text-center">
-                    <CheckCircle className="w-16 h-16 mx-auto mb-4" />
+                    <div className="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        ✓
+                    </div>
                     <h2 className="text-2xl font-bold mb-2">Ihr Solarpotential</h2>
                     <p className="text-teal-100">Basierend auf Ihren Angaben</p>
                 </div>
@@ -295,7 +296,7 @@ const SolarCalculator: React.FC = () => {
                 <div className="flex items-center justify-between text-white">
                     {currentStep > 0 && (
                         <button onClick={goBack} className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg">
-                            <ChevronLeft className="w-5 h-5" />
+                            ←
                         </button>
                     )}
                     <div className="flex-1 text-center">
@@ -308,7 +309,7 @@ const SolarCalculator: React.FC = () => {
                 <div className="mt-4 bg-white bg-opacity-20 rounded-full h-2">
                     <div
                         className="bg-white h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+                        style={{ width: `${((currentStep) / (steps.length - 1)) * 100}%` }}
                     ></div>
                 </div>
             </div>
@@ -319,18 +320,17 @@ const SolarCalculator: React.FC = () => {
                     {steps[currentStep].title}
                 </h2>
 
-                <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
                     {steps[currentStep].options.map((option) => (
                         <button
                             key={option.value}
                             onClick={() => handleOptionSelect(option.value)}
-                            className="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-teal-300 hover:bg-teal-50 transition-all duration-200 flex items-center space-x-4 group"
+                            className="aspect-square p-4 border-2 border-gray-200 rounded-xl hover:border-teal-300 hover:bg-teal-50 transition-all duration-200 flex flex-col items-center justify-center text-center group"
                         >
-                            <span className="text-2xl">{option.icon}</span>
-                            <span className="flex-1 font-medium text-gray-700 group-hover:text-teal-700">
+                            <span className="text-3xl mb-2">{option.icon}</span>
+                            <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700 leading-tight">
                                 {option.label}
                             </span>
-                            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-teal-500" />
                         </button>
                     ))}
                 </div>
