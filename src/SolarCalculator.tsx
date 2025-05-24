@@ -232,8 +232,10 @@ const SolarCalculator: React.FC = () => {
                     </p>
 
                     <form
-                        method="POST"
-                        action="https://webflow.com/your-form-endpoint" // 🔁 Hier echte Webflow-Form-URL einfügen
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmit();
+                        }}
                         className="space-y-4"
                     >
                         <input
