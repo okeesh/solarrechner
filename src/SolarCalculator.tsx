@@ -231,60 +231,31 @@ const SolarCalculator: React.FC = () => {
                         In einem kostenlosen und unverbindlichen Gespräch berechnen wir Ihre genauen Werte und Sparziele.
                     </p>
 
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleSubmit();
+                    {/* 👇 Neuer Button statt Formular */}
+                    <button
+                        onClick={() => {
+                            const modal = document.getElementById("contact-form");
+                            if (modal) {
+                                modal.style.display = "flex";
+                                modal.style.opacity = "1";
+                            }
                         }}
-                        className="space-y-4"
+                        className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer"
                     >
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            placeholder="Ihr Name"
-                            required
-                            className="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#00A48B] focus:border-[#00A48B]"
-                        />
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            placeholder="Ihre E-Mail"
-                            required
-                            className="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#00A48B] focus:border-[#00A48B]"
-                        />
-
-                        <div className="flex items-start gap-2 text-left">
-                            <input
-                                type="checkbox"
-                                required
-                                className="mt-1 accent-[#008080]"
-                            />
-                            <label className="text-sm text-gray-600">
-                                Ich akzeptiere die Datenschutzbestimmungen.
-                            </label>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer"
-                        >
-                            Absenden
-                        </button>
-                    </form>
+                        Unverbindliches Angebot anfordern
+                    </button>
 
                     <button
                         onClick={restart}
-                        className="mt-6 w-full py-3 px-6 bg-[#E5F5F3] text-gray-700 rounded-xl font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"                    >
+                        className="mt-6 w-full py-3 px-6 bg-[#E5F5F3] text-gray-700 rounded-xl font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"
+                    >
                         Neu berechnen
                     </button>
                 </div>
             </div>
         );
     }
+
     return (
         <div className="text-center max-w-md mx-auto mb-12 w-full">
             {/* Slide-in Bereich */}
