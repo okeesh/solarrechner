@@ -218,17 +218,16 @@ const SolarCalculator: React.FC = () => {
                     {/* 👇 Neuer Button statt Formular */}
                     <button
                         onClick={() => {
-                            const modal = window.parent.document.getElementById("contact-form");
-                            if (modal) {
-                                modal.style.display = "flex";
-                                modal.style.opacity = "1";
-                            }
+                            // Nachricht an das übergeordnete Fenster (Webflow) senden
+                            window.parent.postMessage({
+                                action: 'openModal',
+                                modalId: 'contact-form'
+                            }, '*');
                         }}
                         className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer"
                     >
                         Unverbindliches Angebot anfordern
                     </button>
-
                     <button
                         onClick={restart}
                         className="mt-6 w-full py-3 px-6 bg-[#E5F5F3] text-gray-700 rounded-xl font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"
