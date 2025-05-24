@@ -286,9 +286,10 @@ const SolarCalculator: React.FC = () => {
         );
     }
     return (
-        <div className="w-full min-h-[60vh] rounded-2xl p-8 flex items-center justify-center">
-            <div className="text-center max-w-md mx-auto mb-12">
-                <h3 className="text-lg font-semibold text-gray-800 mb-8 leading-tight" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+        <div className="text-center max-w-md mx-auto mb-12 w-full">
+            {/* Slide-in Bereich */}
+            <div key={currentStep} className="slide-in">
+                <h3 className="text-lg font-semibold text-gray-800 mb-12 leading-tight" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                     {steps[currentStep].title}
                 </h3>
 
@@ -311,31 +312,31 @@ const SolarCalculator: React.FC = () => {
                         </button>
                     ))}
                 </div>
-
-                <div className="mb-6">
-                    <div className="flex justify-center space-x-2 mb-3">
-                        {steps.map((_, index) => (
-                            <div
-                                key={index}
-                                className={`h-2 w-8 rounded-full transition-colors ${index <= currentStep ? 'bg-teal-500' : 'bg-gray-200'}`}
-                            />
-                        ))}
-                    </div>
-                    <div className="text-xs text-gray-600" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-                        Schritt {currentStep + 1} von {steps.length}
-                    </div>
-                </div>
-
-                {currentStep > 0 && (
-                    <button
-                        onClick={goBack}
-                        className="text-sm text-teal-600 font-medium hover:text-teal-700 transition-colors"
-                        style={{ fontFamily: 'Satoshi, sans-serif' }}
-                    >
-                        ← Zurück
-                    </button>
-                )}
             </div>
+
+            <div className="mb-6">
+                <div className="flex justify-center space-x-2 mb-3">
+                    {steps.map((_, index) => (
+                        <div
+                            key={index}
+                            className={`h-2 w-8 rounded-full transition-colors ${index <= currentStep ? 'bg-teal-500' : 'bg-gray-200'}`}
+                        />
+                    ))}
+                </div>
+                <div className="text-xs text-gray-600" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                    Schritt {currentStep + 1} von {steps.length}
+                </div>
+            </div>
+
+            {currentStep > 0 && (
+                <button
+                    onClick={goBack}
+                    className="text-sm text-teal-600 font-medium hover:text-teal-700 transition-colors"
+                    style={{ fontFamily: 'Satoshi, sans-serif' }}
+                >
+                    ← Zurück
+                </button>
+            )}
         </div>
     );
 };

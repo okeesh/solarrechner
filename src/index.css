@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+/* Slide in von rechts */
+.slide-in {
+  animation: slideIn 0.4s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
