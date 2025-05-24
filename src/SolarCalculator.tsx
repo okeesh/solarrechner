@@ -152,22 +152,6 @@ const SolarCalculator: React.FC = () => {
         }, 200);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = (): void => {
-        if (!formData.name || !formData.email) {
-            alert('Bitte füllen Sie Name und E-Mail aus.');
-            return;
-        }
-        console.log('Lead generiert:', formData);
-        alert('Vielen Dank! Wir melden uns bald bei Ihnen.');
-    };
 
     const goBack = (): void => {
         if (currentStep > 0) {
