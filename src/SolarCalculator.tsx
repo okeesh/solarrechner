@@ -211,7 +211,7 @@ const SolarCalculator: React.FC = () => {
         const amortizationYears = Math.round(savings.systemSize * 1000 / savings.annualSavings);
 
         return (
-            <div className="w-full min-h-[60vh] bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
+            <div className="w-full min-h-[60vh] flex items-center justify-center">
                 <div className="max-w-xl w-full p-8 text-center">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                         🎉 Glückwunsch! Solar lohnt sich für Sie!
@@ -286,7 +286,7 @@ const SolarCalculator: React.FC = () => {
         );
     }
     return (
-        <div className="w-full min-h-[60vh] bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl p-8 flex items-center justify-center">
+        <div className="w-full min-h-[60vh] rounded-2xl p-8 flex items-center justify-center">
             <div className="text-center max-w-md mx-auto mb-12">
                 <h3 className="text-lg font-semibold text-gray-800 mb-8 leading-tight" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                     {steps[currentStep].title}
