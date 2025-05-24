@@ -212,7 +212,7 @@ const SolarCalculator: React.FC = () => {
 
         return (
             <div className="w-full min-h-[60vh] flex items-center justify-center">
-                <div className="max-w-xl w-full p-8 text-center">
+                <div className="max-w-xl w-full p-8 text-center result-in">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                         🎉 Glückwunsch! Solar lohnt sich für Sie!
                     </h2>
