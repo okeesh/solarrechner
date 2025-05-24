@@ -1,4 +1,4 @@
-import SolarCalculator from './components/SolarCalculator'
+import SolarCalculator from './SolarCalculator'
 
 function App() {
   return (
