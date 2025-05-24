@@ -1,4 +1,3 @@
-// SolarCalculator.tsx
 import React, { useState } from 'react';
 
 interface FormData {
@@ -32,7 +31,7 @@ interface SavingsResult {
 }
 
 const SolarCalculator: React.FC = () => {
-    const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStep, setCurrentStep] = useState<number>(-1);
     const [formData, setFormData] = useState<FormData>({
         installation: '',
         residents: '',
@@ -59,9 +58,10 @@ const SolarCalculator: React.FC = () => {
             title: "Wie viele Personen leben in Ihrem Haushalt?",
             key: "residents",
             options: [
-                { value: "1-2", label: "1-2 Personen", icon: "👥" },
-                { value: "3-4", label: "3-4 Personen", icon: "👨‍👩‍👧‍👦" },
-                { value: "5+", label: "5+ Personen", icon: "👨‍👩‍👧‍👦👶" }
+                { value: "1-2", label: "1-2", icon: "👥" },
+                { value: "3-4", label: "3", icon: "👨‍👩‍👧‍👦" },
+                { value: "5+", label: "4", icon: "👨‍👩‍👧‍👦" },
+                { value: "mehr", label: "5+", icon: "👨‍👩‍👧‍👦👶" }
             ]
         },
         {
@@ -110,6 +110,7 @@ const SolarCalculator: React.FC = () => {
             case '1-2': residentsFactor = 0.8; break;
             case '3-4': residentsFactor = 1.0; break;
             case '5+': residentsFactor = 1.2; break;
+            case 'mehr': residentsFactor = 1.2; break;
         }
 
         let billFactor = 1;
@@ -182,84 +183,157 @@ const SolarCalculator: React.FC = () => {
         });
     };
 
-    if (currentStep === steps.length) {
-        const savings = calculateSavings();
+    if (currentStep === -1) {
         return (
-            <div className="w-full p-16 bg-white">
-                <h2 className="text-2xl font-bold text-center mb-4">Ihr Solarpotential</h2>
-                <p className="text-center text-gray-500 mb-6">Basierend auf Ihren Angaben</p>
-
-                <div className="grid grid-cols-2 gap-4 text-center mb-6">
-                    <div>
-                        <div className="text-3xl font-bold text-teal-600">{savings.annualSavings}€</div>
-                        <div className="text-sm text-gray-600">Ersparnis jährlich</div>
-                    </div>
-                    <div>
-                        <div className="text-3xl font-bold text-teal-600">{savings.co2Reduction} kg</div>
-                        <div className="text-sm text-gray-600">CO₂ Einsparung</div>
-                    </div>
+            <div className="w-full min-h-[60vh] bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
+                <div className="max-w-md w-full text-center rounded-2xl p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        Solarrechner
+                    </h2>
+                    <p className="text-gray-700 mb-8 leading-relaxed" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        Berechnen Sie mit wenigen Klicks Ihre geschätzte jährliche Stromkosten-Ersparnis basierend auf Ihrer Haushaltsgröße, Dachfläche und Stromverbrauch. Schnell, einfach & kostenlos.
+                    </p>
+                    <button
+                        onClick={() => setCurrentStep(0)}
+                        className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer"
+                    >
+                        Jetzt starten
+                    </button>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 text-center mb-6">
-                    <div>
-                        <div className="text-xl font-semibold">{savings.systemSize} kWp</div>
-                        <div className="text-sm">Anlagengröße</div>
-                    </div>
-                    <div>
-                        <div className="text-xl font-semibold">{savings.annualProduction} kWh</div>
-                        <div className="text-sm">Jahresproduktion</div>
-                    </div>
-                </div>
-
-                <input type="text" name="name" placeholder="Ihr Name" value={formData.name} onChange={handleInputChange} className="w-full p-3 border rounded mb-3" />
-                <input type="email" name="email" placeholder="Ihre E-Mail" value={formData.email} onChange={handleInputChange} className="w-full p-3 border rounded mb-3" />
-                <input type="tel" name="phone" placeholder="Ihre Telefonnummer" value={formData.phone} onChange={handleInputChange} className="w-full p-3 border rounded mb-4" />
-                <button onClick={handleSubmit} className="w-full bg-teal-500 text-white py-3 rounded mb-2">Kostenloses Angebot anfordern</button>
-                <button onClick={restart} className="w-full text-teal-600 py-2 border border-teal-600 rounded">Neu berechnen</button>
             </div>
         );
     }
 
+
+    if (currentStep === steps.length) {
+        const savings = calculateSavings();
+        const savings20Years = savings.annualSavings * 20;
+        const amortizationYears = Math.round(savings.systemSize * 1000 / savings.annualSavings);
+
+        return (
+            <div className="w-full min-h-[60vh] bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
+                <div className="max-w-xl w-full p-8 text-center">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        🎉 Glückwunsch! Solar lohnt sich für Sie!
+                    </h2>
+
+                    <p className="text-gray-800 mb-2" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        <strong>{savings.annualSavings} €</strong> potentielles jährliches Stromersparnis
+                    </p>
+                    <p className="text-gray-800 mb-2" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        <strong>{savings20Years.toLocaleString()} €</strong> in 20 Jahren sparen
+                    </p>
+                    <p className="text-gray-800 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        Nach <strong>{amortizationYears} Jahren</strong> amortisiert sich die Anlage
+                    </p>
+
+                    <p className="text-gray-900 font-medium mb-8 leading-relaxed" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        In einem kostenlosen und unverbindlichen Gespräch berechnen wir Ihre genauen Werte und Sparziele.
+                    </p>
+
+                    <form
+                        method="POST"
+                        action="https://webflow.com/your-form-endpoint" // 🔁 Hier echte Webflow-Form-URL einfügen
+                        className="space-y-4"
+                    >
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            placeholder="Ihr Name"
+                            required
+                            className="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#00A48B] focus:border-[#00A48B]"
+                        />
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            placeholder="Ihre E-Mail"
+                            required
+                            className="w-full border border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#00A48B] focus:border-[#00A48B]"
+                        />
+
+                        <div className="flex items-start gap-2 text-left">
+                            <input
+                                type="checkbox"
+                                required
+                                className="mt-1 accent-[#008080]"
+                            />
+                            <label className="text-sm text-gray-600">
+                                Ich akzeptiere die Datenschutzbestimmungen.
+                            </label>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer"
+                        >
+                            Absenden
+                        </button>
+                    </form>
+
+                    <button
+                        onClick={restart}
+                        className="mt-6 w-full py-3 px-6 bg-[#E5F5F3] text-gray-700 rounded-xl font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"                    >
+                        Neu berechnen
+                    </button>
+                </div>
+            </div>
+        );
+    }
     return (
-        <div className="w-full bg-[#e6f8f6] p-16">
+        <div className="w-full min-h-[60vh] bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl p-8 flex items-center justify-center">
+            <div className="text-center max-w-md mx-auto mb-12">
+                <h3 className="text-lg font-semibold text-gray-800 mb-8 leading-tight" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                    {steps[currentStep].title}
+                </h3>
 
-            <div>
-
-                <h2 className="text-xl font-semibold text-center mb-6">{steps[currentStep].title}</h2>
-
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="grid grid-cols-2 gap-3 mb-12">
                     {steps[currentStep].options.map(option => (
                         <button
                             key={option.value}
                             onClick={() => handleOptionSelect(option.value)}
-                            className={`p-4 w-40 border-2 rounded-xl flex flex-col items-center justify-center hover:border-teal-500 hover:bg-white transition text-center ${formData[steps[currentStep].key] === option.value
-                                ? 'border-teal-500 bg-white'
+                            className={`p-4 rounded-xl border bg-white hover:border-[#00A48B] transition-all duration-200 cursor-pointer ${formData[steps[currentStep].key] === option.value
+                                ? 'border-[#00A48B]'
                                 : 'border-gray-200'
                                 }`}
                         >
-                            <div className="text-3xl mb-2">{option.icon}</div>
-                            <div className="text-sm font-medium text-gray-800">{option.label}</div>
+                            <div
+                                className="text-sm font-medium text-gray-700 leading-tight"
+                                style={{ fontFamily: 'Satoshi, sans-serif' }}
+                            >
+                                {option.label}
+                            </div>
                         </button>
                     ))}
                 </div>
-            </div>
 
-
-            <div className="mt-8">
-                <div className="text-center text-sm text-gray-700 mb-2">Schritt {currentStep + 1} von {steps.length}</div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                        className="bg-teal-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentStep + 1) / (steps.length + 1)) * 100}%` }}
-                    ></div>
+                <div className="mb-6">
+                    <div className="flex justify-center space-x-2 mb-3">
+                        {steps.map((_, index) => (
+                            <div
+                                key={index}
+                                className={`h-2 w-8 rounded-full transition-colors ${index <= currentStep ? 'bg-teal-500' : 'bg-gray-200'}`}
+                            />
+                        ))}
+                    </div>
+                    <div className="text-xs text-gray-600" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                        Schritt {currentStep + 1} von {steps.length}
+                    </div>
                 </div>
-            </div>
 
-            {currentStep > 0 && (
-                <div className="mt-6 text-center">
-                    <button onClick={goBack} className="text-sm text-teal-600 underline">Zurück</button>
-                </div>
-            )}
+                {currentStep > 0 && (
+                    <button
+                        onClick={goBack}
+                        className="text-sm text-teal-600 font-medium hover:text-teal-700 transition-colors"
+                        style={{ fontFamily: 'Satoshi, sans-serif' }}
+                    >
+                        ← Zurück
+                    </button>
+                )}
+            </div>
         </div>
     );
 };

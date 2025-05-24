@@ -24,6 +24,14 @@ h2 {
     letter-spacing: -0.03em;
     font-weight: 400;
   }
+  h3 {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 36px;
+    line-height: 120%;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+}
+
   
   /* Standard-Text-Stil */
   body,
