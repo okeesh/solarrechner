@@ -6,6 +6,7 @@ interface FormData {
     roofArea: string;
     currentBill: string;
     roofType: string;
+    storage: string;
     name: string;
     email: string;
     phone: string;
@@ -38,6 +39,7 @@ const SolarCalculator: React.FC = () => {
         roofArea: '',
         currentBill: '',
         roofType: '',
+        storage: '',
         name: '',
         email: '',
         phone: ''
@@ -59,9 +61,9 @@ const SolarCalculator: React.FC = () => {
             key: "residents",
             options: [
                 { value: "1-2", label: "1-2", icon: "👥" },
-                { value: "3-4", label: "3", icon: "👨‍👩‍👧‍👦" },
-                { value: "5+", label: "4", icon: "👨‍👩‍👧‍👦" },
-                { value: "mehr", label: "5+", icon: "👨‍👩‍👧‍👦👶" }
+                { value: "3-4", label: "3-4", icon: "👨‍👩‍👧‍👦" },
+                { value: "5+", label: "5+", icon: "👨‍👩‍👧‍👦" },
+                { value: "mehr", label: "mehr", icon: "👨‍👩‍👧‍👦👶" }
             ]
         },
         {
@@ -93,6 +95,14 @@ const SolarCalculator: React.FC = () => {
                 { value: "pultdach", label: "Pultdach", icon: "📐" },
                 { value: "andere", label: "Andere", icon: "🏘️" }
             ]
+        },
+        {
+            title: "Möchten Sie einen Speicher nutzen?",
+            key: "storage",
+            options: [
+                { value: "ja", label: "Ja", icon: "🔋" },
+                { value: "nein", label: "Nein", icon: "❌" }
+            ]
         }
     ];
 
@@ -122,7 +132,10 @@ const SolarCalculator: React.FC = () => {
         }
 
         const annualProduction = baseProduction * 1000 * residentsFactor;
-        const selfConsumption = 0.3;
+        let selfConsumption = 0.3;
+        if (formData.storage === 'ja') {
+            selfConsumption = 0.6;
+        }
         const feedInTariff = 0.08;
         const electricityPrice = 0.32;
 
@@ -144,11 +157,7 @@ const SolarCalculator: React.FC = () => {
             [steps[currentStep].key]: value
         }));
         setTimeout(() => {
-            if (currentStep < steps.length - 1) {
-                setCurrentStep(currentStep + 1);
-            } else {
-                setCurrentStep(currentStep + 1);
-            }
+            setCurrentStep(currentStep + 1);
         }, 200);
     };
 
@@ -163,7 +172,7 @@ const SolarCalculator: React.FC = () => {
         setCurrentStep(0);
         setFormData({
             installation: '', residents: '', roofArea: '', currentBill: '',
-            roofType: '', name: '', email: '', phone: ''
+            roofType: '', storage: '', name: '', email: '', phone: ''
         });
     };
 
