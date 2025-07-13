@@ -294,7 +294,7 @@ const SolarCalculator: React.FC = () => {
             {currentStep > 0 && (
                 <button
                     onClick={goBack}
-                    className="text-sm text-teal-600 font-medium hover:text-teal-700 transition-colors"
+                    className="text-sm text-teal-600 font-medium hover:text-teal-700 transition-colors cursor-pointer"
                     style={{ fontFamily: 'Satoshi, sans-serif' }}
                 >
                     ← Zurück

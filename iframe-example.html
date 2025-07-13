@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Calculator Iframe Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .iframe-container {
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+        
+        #solar-calculator-iframe {
+            width: 100%;
+            border: none;
+            display: block;
+            min-height: 400px;
+        }
+        
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solar Calculator - Iframe Integration Example</h1>
+        
+        <div class="info">
+            <strong>How it works:</strong>
+            <br>• The solar calculator automatically detects it's running in an iframe
+            <br>• It sends height information to this parent page using postMessage
+            <br>• This page listens for those messages and adjusts the iframe height
+            <br>• The iframe grows/shrinks automatically as the calculator content changes
+        </div>
+        
+        <div class="iframe-container">
+            <iframe 
+                id="solar-calculator-iframe" 
+                src="http://localhost:5173" 
+                title="Solar Calculator">
+            </iframe>
+        </div>
+        
+        <div class="log" id="message-log">
+            <strong>Message Log:</strong><br>
+            Waiting for messages from iframe...
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Parent Site Integration Script
+         * 
+         * This script demonstrates how to listen for resize messages
+         * from the solar calculator iframe and adjust the iframe height accordingly.
+         * 
+         * In Webflow or other sites, you would add similar code to handle
+         * the automatic iframe resizing.
+         */
+        
+        const iframe = document.getElementById('solar-calculator-iframe');
+        const messageLog = document.getElementById('message-log');
+        
+        // Function to log messages for demonstration
+        function logMessage(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            
+            // Add to log (keep only last 10 messages)
+            const currentLog = messageLog.innerHTML;
+            const lines = currentLog.split('<br>');
+            
+            if (lines.length > 10) {
+                lines.splice(1, 1); // Remove oldest message (keep header)
+            }
+            
+            lines.push(logEntry);
+            messageLog.innerHTML = lines.join('<br>');
+        }
+        
+        // Listen for messages from the iframe
+        window.addEventListener('message', function(event) {
+            // In production, you might want to check the origin for security
+            // if (event.origin !== 'https://your-calculator-domain.com') return;
+            
+            // Check if this is our resize message
+            if (event.data && event.data.type === 'resize-calculator') {
+                const newHeight = event.data.height;
+                
+                // Update iframe height
+                iframe.style.height = newHeight + 'px';
+                
+                // Log the resize for demonstration
+                logMessage(`Resized iframe to ${newHeight}px`);
+                
+                console.log('Solar Calculator: Iframe resized to', newHeight + 'px');
+            }
+        });
+        
+        // Log when iframe loads
+        iframe.addEventListener('load', function() {
+            logMessage('Iframe loaded successfully');
+        });
+        
+        // Initial log message
+        logMessage('Parent page ready, listening for resize messages...');
+    </script>
+</body>
+</html> 
