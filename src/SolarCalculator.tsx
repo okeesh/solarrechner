@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { supabase } from './lib/supabaseClient';
+
+interface SolarCalculatorProps {
+  apiKey: string;
+}
 
 interface FormData {
     installation: string;
@@ -31,8 +36,11 @@ interface SavingsResult {
     co2Reduction: number;
 }
 
-const SolarCalculator: React.FC = () => {
+const SolarCalculator: React.FC<SolarCalculatorProps> = ({ apiKey }) => {
     const [currentStep, setCurrentStep] = useState<number>(-1);
+    const [showLeadForm, setShowLeadForm] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [submissionStatus, setSubmissionStatus] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
     const [formData, setFormData] = useState<FormData>({
         installation: '',
         residents: '',
@@ -203,6 +211,83 @@ const SolarCalculator: React.FC = () => {
         const savings20Years = savings.annualSavings * 20;
         const amortizationYears = Math.round(savings.systemSize * 1000 / savings.annualSavings);
 
+        const handleLeadSubmit = async (e: React.FormEvent) => {
+            e.preventDefault();
+            setIsSubmitting(true);
+            setSubmissionStatus(null);
+
+            const leadData = {
+                apiKey: apiKey,
+                customer_name: formData.name,
+                customer_email: formData.email,
+                potential_savings: savings.annualSavings,
+            };
+
+            try {
+                const { error } = await supabase.functions.invoke('submit-lead', {
+                    body: leadData,
+                });
+
+                if (error) throw error;
+                
+                setSubmissionStatus({ message: 'Vielen Dank! Sie erhalten in Kürze eine E-Mail mit Ihrem persönlichen Angebot.', type: 'success' });
+                setTimeout(() => {
+                    restart();
+                }, 5000);
+
+            } catch (error: any) {
+                 setSubmissionStatus({ message: `Fehler: ${error.message}`, type: 'error' });
+            } finally {
+                setIsSubmitting(false);
+            }
+        };
+
+        if (showLeadForm) {
+            return (
+                <div className="w-full flex items-center justify-center">
+                    <div className="max-w-xl w-full p-8 text-center result-in">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                            Fast geschafft!
+                        </h2>
+                        <p className="text-gray-800 mb-8" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                            Geben Sie Ihre Kontaktdaten ein, um Ihr persönliches Angebot per E-Mail zu erhalten.
+                        </p>
+                        <form onSubmit={handleLeadSubmit}>
+                            {submissionStatus && (
+                                <div className={`p-4 mb-4 text-sm rounded-lg ${submissionStatus.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    {submissionStatus.message}
+                                </div>
+                            )}
+                            <input
+                                type="text"
+                                placeholder="Ihr Name"
+                                value={formData.name}
+                                onChange={e => setFormData(f => ({ ...f, name: e.target.value }))}
+                                required
+                                className="w-full p-3 mb-4 border border-gray-300 rounded-lg"
+                            />
+                            <input
+                                type="email"
+                                placeholder="Ihre E-Mail"
+                                value={formData.email}
+                                onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
+                                required
+                                className="w-full p-3 mb-6 border border-gray-300 rounded-lg"
+                                disabled={isSubmitting || submissionStatus?.type === 'success'}
+                            />
+                            <button
+                                type="submit"
+                                className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer disabled:bg-gray-400"
+                                disabled={isSubmitting || submissionStatus?.type === 'success'}
+                            >
+                                {isSubmitting ? 'Wird gesendet...' : 'Angebot erhalten'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )
+        }
+
         return (
             <div className="w-full flex items-center justify-center">
                 <div className="max-w-xl w-full p-8 text-center result-in">
@@ -226,13 +311,7 @@ const SolarCalculator: React.FC = () => {
 
                     {/* 👇 Neuer Button statt Formular */}
                     <button
-                        onClick={() => {
-                            // Nachricht an das übergeordnete Fenster (Webflow) senden
-                            window.parent.postMessage({
-                                action: 'openModal',
-                                modalId: 'contact-form'
-                            }, '*');
-                        }}
+                        onClick={() => setShowLeadForm(true)}
                         className="w-full py-3 px-6 bg-teal-500 text-white rounded-xl font-medium hover:bg-black transition-colors cursor-pointer"
                     >
                         Unverbindliches Angebot anfordern
